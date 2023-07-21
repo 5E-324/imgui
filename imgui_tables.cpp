@@ -2957,7 +2957,7 @@ void ImGui::TableHeader(const char* label)
     float w_arrow = 0.0f;
     float w_sort_text = 0.0f;
     char sort_order_suf[4] = "";
-    const float ARROW_SCALE = 0.65f;
+    const float ARROW_SCALE = 0.75f;
     if ((table->Flags & ImGuiTableFlags_Sortable) && !(column->Flags & ImGuiTableColumnFlags_NoSort))
     {
         w_arrow = ImFloor(g.FontSize * ARROW_SCALE + g.Style.FramePadding.x);

@@ -3824,8 +3824,8 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, const ImVec2& pos, Im
 void ImGui::RenderArrow(ImDrawList* draw_list, ImVec2 pos, ImU32 col, ImGuiDir dir, float scale)
 {
     const float h = draw_list->_Data->FontSize * 1.00f;
-    float r = h * 0.40f * scale;
-    ImVec2 center = pos + ImVec2(h * 0.50f, h * 0.50f * scale);
+    float r = h * 0x0.5p0f * scale;
+    ImVec2 center = pos + ImVec2(h * 0.50f, h * 0.50f);
 
     ImVec2 a, b, c;
     switch (dir)
@@ -3833,23 +3833,33 @@ void ImGui::RenderArrow(ImDrawList* draw_list, ImVec2 pos, ImU32 col, ImGuiDir d
     case ImGuiDir_Up:
     case ImGuiDir_Down:
         if (dir == ImGuiDir_Up) r = -r;
-        a = ImVec2(+0.000f, +0.750f) * r;
-        b = ImVec2(-0.866f, -0.750f) * r;
-        c = ImVec2(+0.866f, -0.750f) * r;
+        //a = ImVec2(+0.000f, +0.750f) * r;
+        //b = ImVec2(-0.866f, -0.750f) * r;
+        //c = ImVec2(+0.866f, -0.750f) * r;
+        a = ImVec2(-1.0f, -0.5f) * r;
+        b = ImVec2(+0.0f, +0.5f) * r;
+        c = ImVec2(+1.0f, -0.5f) * r;
         break;
     case ImGuiDir_Left:
     case ImGuiDir_Right:
         if (dir == ImGuiDir_Left) r = -r;
-        a = ImVec2(+0.750f, +0.000f) * r;
-        b = ImVec2(-0.750f, +0.866f) * r;
-        c = ImVec2(-0.750f, -0.866f) * r;
+        //a = ImVec2(+0.750f, +0.000f) * r;
+        //b = ImVec2(-0.750f, +0.866f) * r;
+        //c = ImVec2(-0.750f, -0.866f) * r;
+        a = ImVec2(-0.5f, -1.0f) * r;
+        b = ImVec2(+0.5f, +0.0f) * r;
+        c = ImVec2(-0.5f, +1.0f) * r;
         break;
     case ImGuiDir_None:
     case ImGuiDir_COUNT:
         IM_ASSERT(0);
         break;
     }
-    draw_list->AddTriangleFilled(center + a, center + b, center + c, col);
+    //draw_list->AddTriangleFilled(center + a, center + b, center + c, col);
+    draw_list->PathLineTo(center + a);
+    draw_list->PathLineTo(center + b);
+    draw_list->PathLineTo(center + c);
+    draw_list->PathStroke(col, 0, h * 0.05);
 }
 
 void ImGui::RenderBullet(ImDrawList* draw_list, ImVec2 pos, ImU32 col)
@@ -3890,8 +3900,17 @@ void ImGui::RenderArrowPointingAt(ImDrawList* draw_list, ImVec2 pos, ImVec2 half
 // and because the saved space means that the left-most tab label can stay at exactly the same position as the label of a loose window.
 void ImGui::RenderArrowDockMenu(ImDrawList* draw_list, ImVec2 p_min, float sz, ImU32 col)
 {
-    draw_list->AddRectFilled(p_min + ImVec2(sz * 0.20f, sz * 0.15f), p_min + ImVec2(sz * 0.80f, sz * 0.30f), col);
-    RenderArrowPointingAt(draw_list, p_min + ImVec2(sz * 0.50f, sz * 0.85f), ImVec2(sz * 0.30f, sz * 0.40f), ImGuiDir_Down, col);
+    draw_list->PathLineTo(p_min + ImVec2(sz * 0.25f, sz * 0.25f));
+    draw_list->PathLineTo(p_min + ImVec2(sz * 0.50f, sz * 0.50f));
+    draw_list->PathLineTo(p_min + ImVec2(sz * 0.75f, sz * 0.25f));
+    draw_list->PathStroke(col, 0, draw_list->_Data->FontSize * 0.05);
+
+    draw_list->PathLineTo(p_min + ImVec2(sz * 0.25f, sz * 0.50f));
+    draw_list->PathLineTo(p_min + ImVec2(sz * 0.50f, sz * 0.75f));
+    draw_list->PathLineTo(p_min + ImVec2(sz * 0.75f, sz * 0.50f));
+    draw_list->PathStroke(col, 0, draw_list->_Data->FontSize * 0.05);
+    //draw_list->AddRectFilled(p_min + ImVec2(sz * 0.20f, sz * 0.15f), p_min + ImVec2(sz * 0.80f, sz * 0.30f), col);
+    //RenderArrowPointingAt(draw_list, p_min + ImVec2(sz * 0.50f, sz * 0.85f), ImVec2(sz * 0.30f, sz * 0.40f), ImGuiDir_Down, col);
 }
 
 static inline float ImAcos01(float x)
