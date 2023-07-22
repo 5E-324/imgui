@@ -6181,7 +6181,8 @@ bool ImGui::TreeNodeBehavior(ImGuiID id, ImGuiTreeNodeFlags flags, const char* l
     ImGuiContext& g = *GImGui;
     const ImGuiStyle& style = g.Style;
     const bool display_frame = (flags & ImGuiTreeNodeFlags_Framed) != 0;
-    ImVec2 padding = (display_frame || (flags & ImGuiTreeNodeFlags_FramePadding)) ? style.FramePadding : ImVec2(style.FramePadding.x, ImMin(window->DC.CurrLineTextBaseOffset, style.FramePadding.y) + style.ItemSpacing.y * 0.5f);
+    ImVec2 padding = (display_frame || (flags & ImGuiTreeNodeFlags_FramePadding)) ? style.FramedTreeNodePadding : ImVec2(style.FramePadding.x, ImMin(window->DC.CurrLineTextBaseOffset, style.FramePadding.y) + style.ItemSpacing.y * 0.5f);
+    //padding.y += style.ItemSpacing.y * 0.5f;
 
     if (window->DC.NoYSpacing) {
         window->DC.CursorPos.y -= g.Style.ItemSpacing.y;
@@ -6473,8 +6474,13 @@ bool ImGui::CollapsingHeader(const char* label, bool* p_visible, ImGuiTreeNodeFl
         ImGuiContext& g = *GImGui;
         ImGuiLastItemData last_item_backup = g.LastItemData;
         float button_size = g.FontSize;
-        float button_x = ImMax(g.LastItemData.Rect.Min.x, g.LastItemData.Rect.Max.x - g.Style.FramePadding.y * 2.0f - button_size);
+        float button_x = ImMax(g.LastItemData.Rect.Min.x, g.LastItemData.Rect.Max.x - g.Style.FramedTreeNodePadding.y * 2.0f - button_size);
         float button_y = g.LastItemData.Rect.Min.y;
+
+        // TODO_IMAG: Improve this
+        float difference = g.Style.FramedTreeNodePadding.y - g.Style.FramePadding.y;
+        button_x += difference;
+        button_y += difference;
         ImGuiID close_button_id = GetIDWithSeed("#CLOSE", NULL, id);
         if (CloseButton(close_button_id, ImVec2(button_x, button_y)))
             *p_visible = false;
