@@ -826,7 +826,7 @@ bool ImGui::CloseButton(ImGuiID id, const ImVec2& pos)
     if (hovered)
         window->DrawList->AddCircleFilled(center, ImMax(2.0f, g.FontSize * 0.5f + 1.0f), col);
 
-    float cross_extent = g.FontSize * 0.5f * 0.7071f - 1.0f;
+    float cross_extent = g.FontSize * 0.4f * 0.7071f;
     float thickness = g.Style.LineThickness;//g.FontSize * 0x1p-5;
     ImU32 cross_col = GetColorU32(ImGuiCol_Text);
     center -= ImVec2(0.5f, 0.5f);
