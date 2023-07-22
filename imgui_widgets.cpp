@@ -888,7 +888,7 @@ bool ImGui::CollapseButton(ImGuiID id, const ImVec2& pos, ImGuiDockNode* dock_no
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
 
-    ImVec2 padding = ImVec2(g.Style.FramePadding.y, g.Style.FramePadding.y);
+    ImVec2 padding = ImVec2(g.Style.TitleBarPadding.y, g.Style.TitleBarPadding.y);
     ImRect bb(pos, pos + ImVec2(g.FontSize, g.FontSize) + padding * 2.0f);
     ItemAdd(bb, id);
     bool hovered, held;
@@ -7648,7 +7648,7 @@ bool    ImGui::BeginTabBarEx(ImGuiTabBar* tab_bar, const ImRect& tab_bar_bb, ImG
     tab_bar->PrevTabsContentsHeight = tab_bar->CurrTabsContentsHeight;
     tab_bar->CurrTabsContentsHeight = 0.0f;
     tab_bar->ItemSpacingY = g.Style.ItemSpacing.y;
-    tab_bar->FramePadding = g.Style.FramePadding;
+    tab_bar->FramePadding = (dock_node != NULL) ? g.Style.TitleBarPadding : g.Style.FramePadding;
     tab_bar->TabsActiveCount = 0;
     tab_bar->LastTabItemIdx = -1;
     tab_bar->BeginCount = 1;
@@ -7824,7 +7824,7 @@ static void ImGui::TabBarLayout(ImGuiTabBar* tab_bar)
         // and we cannot wait for the next BeginTabItem() call. We cannot compute this width within TabBarAddTab() because font size depends on the active window.
         const char* tab_name = TabBarGetTabName(tab_bar, tab);
         const bool has_close_button_or_unsaved_marker = (tab->Flags & ImGuiTabItemFlags_NoCloseButton) == 0 || (tab->Flags & ImGuiTabItemFlags_UnsavedDocument);
-        tab->ContentWidth = (tab->RequestedWidth >= 0.0f) ? tab->RequestedWidth : TabItemCalcSize(tab_name, has_close_button_or_unsaved_marker).x;
+        tab->ContentWidth = (tab->RequestedWidth >= 0.0f) ? tab->RequestedWidth : TabItemCalcSize(tab_name, has_close_button_or_unsaved_marker, tab_bar->FramePadding).x;
 
         int section_n = TabItemGetSectionIdx(tab);
         ImGuiTabBarSection* section = &sections[section_n];
@@ -8435,7 +8435,7 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
     tab_bar->LastTabItemIdx = (ImS16)tab_bar->Tabs.index_from_ptr(tab);
 
     // Calculate tab contents size
-    ImVec2 size = TabItemCalcSize(label, (p_open != NULL) || (flags & ImGuiTabItemFlags_UnsavedDocument));
+    ImVec2 size = TabItemCalcSize(label, (p_open != NULL) || (flags & ImGuiTabItemFlags_UnsavedDocument), tab_bar->FramePadding);
     tab->RequestedWidth = -1.0f;
     if (g.NextItemData.Flags & ImGuiNextItemDataFlags_HasWidth)
         size.x = tab->RequestedWidth = g.NextItemData.Width;
@@ -8694,21 +8694,21 @@ void    ImGui::SetTabItemClosed(const char* label)
     }
 }
 
-ImVec2 ImGui::TabItemCalcSize(const char* label, bool has_close_button_or_unsaved_marker)
+ImVec2 ImGui::TabItemCalcSize(const char* label, bool has_close_button_or_unsaved_marker, ImVec2 padding)
 {
     ImGuiContext& g = *GImGui;
     ImVec2 label_size = CalcTextSize(label, NULL, true);
-    ImVec2 size = ImVec2(label_size.x + g.Style.FramePadding.x, label_size.y + g.Style.FramePadding.y * 2.0f);
+    ImVec2 size = ImVec2(label_size.x + padding.x, label_size.y + padding.y * 2.0f);
     if (has_close_button_or_unsaved_marker)
-        size.x += g.Style.FramePadding.x + (g.Style.ItemInnerSpacing.x + g.FontSize); // We use Y intentionally to fit the close button circle.
+        size.x += padding.x + (g.Style.ItemInnerSpacing.x + g.FontSize); // We use Y intentionally to fit the close button circle.
     else
-        size.x += g.Style.FramePadding.x + 1.0f;
+        size.x += padding.x + 1.0f;
     return ImVec2(ImMin(size.x, TabBarCalcMaxTabWidth()), size.y);
 }
 
 ImVec2 ImGui::TabItemCalcSize(ImGuiWindow* window)
 {
-    return TabItemCalcSize(window->Name, window->HasCloseButton || (window->Flags & ImGuiWindowFlags_UnsavedDocument));
+    return TabItemCalcSize(window->Name, window->HasCloseButton || (window->Flags & ImGuiWindowFlags_UnsavedDocument), GImGui->Style.TitleBarPadding);
 }
 
 void ImGui::TabItemBackground(ImDrawList* draw_list, const ImRect& bb, ImGuiTabItemFlags flags, ImU32 col)

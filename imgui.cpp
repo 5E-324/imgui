@@ -6460,7 +6460,7 @@ void ImGui::RenderWindowTitleBarContents(ImGuiWindow* window, const ImRect& titl
     // FIXME: Would be nice to generalize the subtleties expressed here into reusable code.
     float pad_l = 0;// = style.FramePadding.x;
     float pad_r = 0;// = style.FramePadding.x;
-    float button_sz = g.FontSize + style.FramePadding.y * 2.0f;
+    float button_sz = g.FontSize + style.TitleBarPadding.y * 2.0f;
     ImVec2 close_button_pos;
     ImVec2 collapse_button_pos;
     if (has_close_button)
@@ -6489,7 +6489,8 @@ void ImGui::RenderWindowTitleBarContents(ImGuiWindow* window, const ImRect& titl
 
     // Close button
     if (has_close_button)
-        if (CloseButton(window->GetID("#CLOSE"), close_button_pos))
+        //if (CloseButton(window->GetID("#CLOSE"), close_button_pos))
+        if (CloseButton(window->GetID("#CLOSE"), ImRect(close_button_pos, close_button_pos + ImVec2(button_sz, button_sz))))
             *p_open = false;
 
     window->DC.NavLayerCurrent = ImGuiNavLayer_Main;
@@ -6502,10 +6503,10 @@ void ImGui::RenderWindowTitleBarContents(ImGuiWindow* window, const ImRect& titl
 
     // As a nice touch we try to ensure that centered title text doesn't get affected by visibility of Close/Collapse button,
     // while uncentered title text will still reach edges correctly.
-    if (pad_l == 0.0f) pad_l = g.Style.FramePadding.x;
+    if (pad_l == 0.0f) pad_l = g.Style.TitleBarPadding.x;
     else pad_l += g.Style.ItemInnerSpacing.x;
 
-    if (pad_r ==  0.0f) pad_r = g.Style.FramePadding.x;
+    if (pad_r ==  0.0f) pad_r = g.Style.TitleBarPadding.x;
     else pad_r += g.Style.ItemInnerSpacing.x;
 
     if (style.WindowTitleAlign.x > 0.0f && style.WindowTitleAlign.x < 1.0f)
@@ -16647,9 +16648,9 @@ static void ImGui::DockNodeWindowMenuUpdate(ImGuiDockNode* node, ImGuiTabBar* ta
     // Try to position the menu so it is more likely to stays within the same viewport
     ImGuiContext& g = *GImGui;
     if (g.Style.WindowMenuButtonPosition == ImGuiDir_Left)
-        SetNextWindowPos(ImVec2(node->Pos.x, node->Pos.y + GetFrameHeight()), ImGuiCond_Always, ImVec2(0.0f, 0.0f));
+        SetNextWindowPos(ImVec2(node->Pos.x, node->Pos.y + GetTitleBarHeight()), ImGuiCond_Always, ImVec2(0.0f, 0.0f));
     else
-        SetNextWindowPos(ImVec2(node->Pos.x + node->Size.x, node->Pos.y + GetFrameHeight()), ImGuiCond_Always, ImVec2(1.0f, 0.0f));
+        SetNextWindowPos(ImVec2(node->Pos.x + node->Size.x, node->Pos.y + GetTitleBarHeight()), ImGuiCond_Always, ImVec2(1.0f, 0.0f));
     if (BeginPopup("#WindowMenu"))
     {
         node->IsFocused = true;
@@ -16905,7 +16906,8 @@ static void ImGui::DockNodeUpdateTabBar(ImGuiDockNode* node, ImGuiWindow* host_w
             PushItemFlag(ImGuiItemFlags_Disabled, true);
             PushStyleColor(ImGuiCol_Text, style.Colors[ImGuiCol_Text] * ImVec4(1.0f,1.0f,1.0f,0.4f));
         }
-        if (CloseButton(host_window->GetID("#CLOSE"), close_button_pos))
+        float close_button_size = g.FontSize + style.TitleBarPadding.y * 2.0f;
+        if (CloseButton(host_window->GetID("#CLOSE"), ImRect(close_button_pos, close_button_pos + ImVec2(close_button_size, close_button_size))))
         {
             node->WantCloseAll = true;
             for (int n = 0; n < tab_bar->Tabs.Size; n++)
@@ -17040,14 +17042,14 @@ static void ImGui::DockNodeCalcTabBarLayout(const ImGuiDockNode* node, ImRect* o
     ImGuiContext& g = *GImGui;
     ImGuiStyle& style = g.Style;
 
-    ImRect r = ImRect(node->Pos.x, node->Pos.y, node->Pos.x + node->Size.x, node->Pos.y + g.FontSize + g.Style.FramePadding.y * 2.0f);
+    ImRect r = ImRect(node->Pos.x, node->Pos.y, node->Pos.x + node->Size.x, node->Pos.y + g.FontSize + g.Style.TitleBarPadding.y * 2.0f);
     if (out_title_rect) { *out_title_rect = r; }
 
     r.Min.x += style.WindowBorderSize;
     r.Max.x -= style.WindowBorderSize;
 
     //float button_sz = g.FontSize;
-    float button_sz = g.FontSize + style.FramePadding.y * 2.0f;
+    float button_sz = g.FontSize + style.TitleBarPadding.y * 2.0f;//style.FramePadding.y * 2.0f;
 
     ImVec2 window_menu_button_pos = r.Min;
     //r.Min.x += style.FramePadding.x;
@@ -17067,6 +17069,7 @@ static void ImGui::DockNodeCalcTabBarLayout(const ImGuiDockNode* node, ImRect* o
         r.Max.x -= button_sz;// +style.FramePadding.x;
         window_menu_button_pos = ImVec2(r.Max.x, r.Min.y);
     }
+    r.Max.x -= button_sz;
     if (out_tab_bar_rect) { *out_tab_bar_rect = r; }
     if (out_window_menu_button_pos) { *out_window_menu_button_pos = window_menu_button_pos; }
 }
@@ -17275,7 +17278,7 @@ static void ImGui::DockNodePreviewDockRender(ImGuiWindow* host_window, ImGuiDock
     {
         ImRect overlay_rect = data->FutureNode.Rect();
         if (data->SplitDir == ImGuiDir_None && can_preview_tabs)
-            overlay_rect.Min.y += GetFrameHeight();
+            overlay_rect.Min.y += GetTitleBarHeight();
         if (data->SplitDir != ImGuiDir_None || data->IsCenterAvailable)
             for (int overlay_n = 0; overlay_n < overlay_draw_lists_count; overlay_n++)
                 overlay_draw_lists[overlay_n]->AddRectFilled(overlay_rect.Min, overlay_rect.Max, overlay_col_main, host_window->WindowRounding, CalcRoundingFlagsForRectInRect(overlay_rect, host_window->Rect(), g.Style.DockingSeparatorSize));
@@ -17291,13 +17294,14 @@ static void ImGui::DockNodePreviewDockRender(ImGuiWindow* host_window, ImGuiDock
         if (host_node && host_node->TabBar)
         {
             if (!host_node->IsHiddenTabBar() && !host_node->IsNoTabBar())
-                tab_pos.x += host_node->TabBar->WidthAllTabs + g.Style.ItemInnerSpacing.x; // We don't use OffsetNewTab because when using non-persistent-order tab bar it is incremented with each Tab submission.
+                tab_pos.x += host_node->TabBar->WidthAllTabs;// + g.Style.ItemInnerSpacing.x; // We don't use OffsetNewTab because when using non-persistent-order tab bar it is incremented with each Tab submission.
             else
-                tab_pos.x += g.Style.ItemInnerSpacing.x + TabItemCalcSize(host_node->Windows[0]).x;
+                tab_pos.x += TabItemCalcSize(host_node->Windows[0]).x;// + g.Style.ItemInnerSpacing.x
         }
         else if (!(host_window->Flags & ImGuiWindowFlags_DockNodeHost))
         {
-            tab_pos.x += g.Style.ItemInnerSpacing.x + TabItemCalcSize(host_window).x; // Account for slight offset which will be added when changing from title bar to tab bar
+            //tab_pos.x += g.Style.ItemInnerSpacing.x + TabItemCalcSize(host_window).x; // Account for slight offset which will be added when changing from title bar to tab bar
+            tab_pos.x += TabItemCalcSize(host_window).x; // Account for slight offset which will be added when changing from title bar to tab bar
         }
 
         // Draw tab shape/label preview (payload may be a loose window or a host window carrying multiple tabbed windows)
@@ -17317,7 +17321,7 @@ static void ImGui::DockNodePreviewDockRender(ImGuiWindow* host_window, ImGuiDock
             // Calculate the tab bounding box for each payload window
             ImVec2 tab_size = TabItemCalcSize(payload_window);
             ImRect tab_bb(tab_pos.x, tab_pos.y, tab_pos.x + tab_size.x, tab_pos.y + tab_size.y);
-            tab_pos.x += tab_size.x + g.Style.ItemInnerSpacing.x;
+            tab_pos.x += tab_size.x;//; +g.Style.ItemInnerSpacing.x;
             const ImU32 overlay_col_text = GetColorU32(payload_window->DockStyle.Colors[ImGuiWindowDockStyleCol_Text]);
             const ImU32 overlay_col_tabs = GetColorU32(payload_window->DockStyle.Colors[ImGuiWindowDockStyleCol_TabActive]);
             PushStyleColor(ImGuiCol_Text, overlay_col_text);
@@ -17327,7 +17331,7 @@ static void ImGui::DockNodePreviewDockRender(ImGuiWindow* host_window, ImGuiDock
                 if (!tab_bar_rect.Contains(tab_bb))
                     overlay_draw_lists[overlay_n]->PushClipRect(tab_bar_rect.Min, tab_bar_rect.Max);
                 TabItemBackground(overlay_draw_lists[overlay_n], tab_bb, tab_flags, overlay_col_tabs);
-                TabItemLabelAndCloseButton(overlay_draw_lists[overlay_n], tab_bb, tab_flags, g.Style.FramePadding, payload_window->Name, 0, 0, false, NULL, NULL);
+                TabItemLabelAndCloseButton(overlay_draw_lists[overlay_n], tab_bb, tab_flags, g.Style.TitleBarPadding, payload_window->Name, 0, 0, false, NULL, NULL);
                 if (!tab_bar_rect.Contains(tab_bb))
                     overlay_draw_lists[overlay_n]->PopClipRect();
             }

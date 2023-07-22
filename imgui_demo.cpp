@@ -6380,6 +6380,7 @@ void ImGui::ShowStyleEditor(ImGuiStyle* ref)
             ImGui::SeparatorText("Main");
             ImGui::SliderFloat2("WindowPadding", (float*)&style.WindowPadding, 0.0f, 20.0f, "%.0f");
             ImGui::SliderFloat2("FramePadding", (float*)&style.FramePadding, 0.0f, 20.0f, "%.0f");
+            ImGui::SliderFloat2("TitleBarPadding", (float*)&style.TitleBarPadding, 0.0f, 20.0f, "%.0f");
             ImGui::SliderFloat2("CellPadding", (float*)&style.CellPadding, 0.0f, 20.0f, "%.0f");
             ImGui::SliderFloat2("ItemSpacing", (float*)&style.ItemSpacing, 0.0f, 20.0f, "%.0f");
             ImGui::SliderFloat2("ItemInnerSpacing", (float*)&style.ItemInnerSpacing, 0.0f, 20.0f, "%.0f");
