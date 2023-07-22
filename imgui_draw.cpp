@@ -3859,7 +3859,7 @@ void ImGui::RenderArrow(ImDrawList* draw_list, ImVec2 pos, ImU32 col, ImGuiDir d
     draw_list->PathLineTo(center + a);
     draw_list->PathLineTo(center + b);
     draw_list->PathLineTo(center + c);
-    draw_list->PathStroke(col, 0, h * 0.05);
+    draw_list->PathStroke(col, 0, GImGui->Style.LineThickness);
 }
 
 void ImGui::RenderBullet(ImDrawList* draw_list, ImVec2 pos, ImU32 col)
@@ -3903,12 +3903,12 @@ void ImGui::RenderArrowDockMenu(ImDrawList* draw_list, ImVec2 p_min, float sz, I
     draw_list->PathLineTo(p_min + ImVec2(sz * 0.25f, sz * 0.25f));
     draw_list->PathLineTo(p_min + ImVec2(sz * 0.50f, sz * 0.50f));
     draw_list->PathLineTo(p_min + ImVec2(sz * 0.75f, sz * 0.25f));
-    draw_list->PathStroke(col, 0, draw_list->_Data->FontSize * 0.05);
+    draw_list->PathStroke(col, 0, GImGui->Style.LineThickness);
 
     draw_list->PathLineTo(p_min + ImVec2(sz * 0.25f, sz * 0.50f));
     draw_list->PathLineTo(p_min + ImVec2(sz * 0.50f, sz * 0.75f));
     draw_list->PathLineTo(p_min + ImVec2(sz * 0.75f, sz * 0.50f));
-    draw_list->PathStroke(col, 0, draw_list->_Data->FontSize * 0.05);
+    draw_list->PathStroke(col, 0, GImGui->Style.LineThickness);
     //draw_list->AddRectFilled(p_min + ImVec2(sz * 0.20f, sz * 0.15f), p_min + ImVec2(sz * 0.80f, sz * 0.30f), col);
     //RenderArrowPointingAt(draw_list, p_min + ImVec2(sz * 0.50f, sz * 0.85f), ImVec2(sz * 0.30f, sz * 0.40f), ImGuiDir_Down, col);
 }
