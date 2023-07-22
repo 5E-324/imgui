@@ -1230,35 +1230,71 @@ ImGuiStyle::ImGuiStyle()
     ImGui::StyleColorsDark(this);
 }
 
+static inline float  ImRound(float f) { return rint(f); }
+static inline ImVec2 ImRound(const ImVec2 &v) {
+    return ImVec2(
+        rint(v.x),
+        rint(v.y));
+}
 // To scale your entire UI (e.g. if you want your app to use High DPI or generally be DPI aware) you may use this helper function. Scaling the fonts is done separately and is up to you.
 // Important: This operation is lossy because we round all sizes to integer. If you need to change your scale multiples, call this over a freshly initialized ImGuiStyle structure rather than scaling multiple times.
 void ImGuiStyle::ScaleAllSizes(float scale_factor)
 {
     //WindowPadding = ImFloor(WindowPadding * scale_factor);
-    WindowRounding = ImFloor(WindowRounding * scale_factor);
-    WindowMinSize = ImFloor(WindowMinSize * scale_factor);
-    ChildRounding = ImFloor(ChildRounding * scale_factor);
-    PopupRounding = ImFloor(PopupRounding * scale_factor);
-    FramePadding = ImFloor(FramePadding * scale_factor);
-    FrameRounding = ImFloor(FrameRounding * scale_factor);
-    ItemSpacing = ImFloor(ItemSpacing * scale_factor);
-    ItemInnerSpacing = ImFloor(ItemInnerSpacing * scale_factor);
-    CellPadding = ImFloor(CellPadding * scale_factor);
-    TouchExtraPadding = ImFloor(TouchExtraPadding * scale_factor);
-    IndentSpacing = ImFloor(IndentSpacing * scale_factor);
-    ColumnsMinSpacing = ImFloor(ColumnsMinSpacing * scale_factor);
-    ScrollbarSize = ImFloor(ScrollbarSize * scale_factor);
-    ScrollbarRounding = ImFloor(ScrollbarRounding * scale_factor);
-    GrabMinSize = ImFloor(GrabMinSize * scale_factor);
-    GrabRounding = ImFloor(GrabRounding * scale_factor);
-    LogSliderDeadzone = ImFloor(LogSliderDeadzone * scale_factor);
-    TabRounding = ImFloor(TabRounding * scale_factor);
-    TabMinWidthForCloseButton = (TabMinWidthForCloseButton != FLT_MAX) ? ImFloor(TabMinWidthForCloseButton * scale_factor) : FLT_MAX;
-    SeparatorTextPadding = ImFloor(SeparatorTextPadding * scale_factor);
-    DockingSeparatorSize = ImFloor(DockingSeparatorSize * scale_factor);
-    DisplayWindowPadding = ImFloor(DisplayWindowPadding * scale_factor);
-    DisplaySafeAreaPadding = ImFloor(DisplaySafeAreaPadding * scale_factor);
-    MouseCursorScale = ImFloor(MouseCursorScale * scale_factor);
+    //WindowRounding = ImFloor(WindowRounding * scale_factor);
+    //WindowMinSize = ImFloor(WindowMinSize * scale_factor);
+    //ChildRounding = ImFloor(ChildRounding * scale_factor);
+    //PopupRounding = ImFloor(PopupRounding * scale_factor);
+    //FramePadding = ImFloor(FramePadding * scale_factor);
+    //TitleBarPadding = ImFloor(TitleBarPadding * scale_factor);
+    //FramedTreeNodePadding = ImFloor(FramedTreeNodePadding * scale_factor);
+    //FrameRounding = ImFloor(FrameRounding * scale_factor);
+    //ItemSpacing = ImFloor(ItemSpacing * scale_factor);
+    //ItemInnerSpacing = ImFloor(ItemInnerSpacing * scale_factor);
+    //CellPadding = ImFloor(CellPadding * scale_factor);
+    //TouchExtraPadding = ImFloor(TouchExtraPadding * scale_factor);
+    //IndentSpacing = ImFloor(IndentSpacing * scale_factor);
+    //ColumnsMinSpacing = ImFloor(ColumnsMinSpacing * scale_factor);
+    //ScrollbarSize = ImFloor(ScrollbarSize * scale_factor);
+    //ScrollbarRounding = ImFloor(ScrollbarRounding * scale_factor);
+    //GrabMinSize = ImFloor(GrabMinSize * scale_factor);
+    //GrabRounding = ImFloor(GrabRounding * scale_factor);
+    //LogSliderDeadzone = ImFloor(LogSliderDeadzone * scale_factor);
+    //TabRounding = ImFloor(TabRounding * scale_factor);
+    //TabMinWidthForCloseButton = (TabMinWidthForCloseButton != FLT_MAX) ? ImFloor(TabMinWidthForCloseButton * scale_factor) : FLT_MAX;
+    //SeparatorTextPadding = ImFloor(SeparatorTextPadding * scale_factor);
+    //DockingSeparatorSize = ImFloor(DockingSeparatorSize * scale_factor);
+    //DisplayWindowPadding = ImFloor(DisplayWindowPadding * scale_factor);
+    //DisplaySafeAreaPadding = ImFloor(DisplaySafeAreaPadding * scale_factor);
+    //MouseCursorScale = ImFloor(MouseCursorScale * scale_factor);
+
+    WindowPadding = ImRound(WindowPadding * scale_factor);
+    WindowRounding = ImRound(WindowRounding * scale_factor);
+    WindowMinSize = ImRound(WindowMinSize * scale_factor);
+    ChildRounding = ImRound(ChildRounding * scale_factor);
+    PopupRounding = ImRound(PopupRounding * scale_factor);
+    FramePadding = ImRound(FramePadding * scale_factor);
+    TitleBarPadding = ImRound(TitleBarPadding * scale_factor);
+    FramedTreeNodePadding = ImRound(FramedTreeNodePadding * scale_factor);
+    FrameRounding = ImRound(FrameRounding * scale_factor);
+    ItemSpacing = ImRound(ItemSpacing * scale_factor);
+    ItemInnerSpacing = ImRound(ItemInnerSpacing * scale_factor);
+    CellPadding = ImRound(CellPadding * scale_factor);
+    TouchExtraPadding = ImRound(TouchExtraPadding * scale_factor);
+    IndentSpacing = ImRound(IndentSpacing * scale_factor);
+    ColumnsMinSpacing = ImRound(ColumnsMinSpacing * scale_factor);
+    ScrollbarSize = ImRound(ScrollbarSize * scale_factor);
+    ScrollbarRounding = ImRound(ScrollbarRounding * scale_factor);
+    GrabMinSize = ImRound(GrabMinSize * scale_factor);
+    GrabRounding = ImRound(GrabRounding * scale_factor);
+    LogSliderDeadzone = ImRound(LogSliderDeadzone * scale_factor);
+    TabRounding = ImRound(TabRounding * scale_factor);
+    TabMinWidthForCloseButton = (TabMinWidthForCloseButton != FLT_MAX) ? ImRound(TabMinWidthForCloseButton * scale_factor) : FLT_MAX;
+    SeparatorTextPadding = ImRound(SeparatorTextPadding * scale_factor);
+    DockingSeparatorSize = ImRound(DockingSeparatorSize * scale_factor);
+    DisplayWindowPadding = ImRound(DisplayWindowPadding * scale_factor);
+    DisplaySafeAreaPadding = ImRound(DisplaySafeAreaPadding * scale_factor);
+    MouseCursorScale = ImRound(MouseCursorScale * scale_factor);
 
     LineThickness = LineThickness * scale_factor;
 }
