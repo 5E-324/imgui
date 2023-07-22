@@ -905,7 +905,7 @@ bool ImGui::CollapseButton(ImGuiID id, const ImVec2& pos, ImGuiDockNode* dock_no
     if (dock_node)
         RenderArrowDockMenu(window->DrawList, bb.Min + padding, g.FontSize, text_col);
     else
-        RenderArrow(window->DrawList, bb.Min + padding, text_col, window->Collapsed ? ImGuiDir_Right : ImGuiDir_Down, 1.0f);
+        RenderArrow(window->DrawList, bb.Min + padding, text_col, window->Collapsed ? ImGuiDir_Down : ImGuiDir_Up, 1.0f);
 
     // Switch to moving the window after mouse is moved beyond the initial drag threshold
     if (IsItemActive() && IsMouseDragging(0))
