@@ -823,8 +823,11 @@ bool ImGui::CloseButton(ImGuiID id, const ImVec2& pos)
     // FIXME: Clarify this mess
     ImU32 col = GetColorU32(held ? ImGuiCol_ButtonActive : ImGuiCol_ButtonHovered);
     ImVec2 center = bb.GetCenter();
-    if (hovered)
-        window->DrawList->AddCircleFilled(center, ImMax(2.0f, g.FontSize * 0.5f + 1.0f), col);
+    if (hovered) {
+        //window->DrawList->AddCircleFilled(center, ImMax(2.0f, g.FontSize * 0.5f + 1.0f), col);
+        ImVec2 half_size = ImVec2(g.FontSize * 0.5f, g.FontSize * 0.5f);
+        window->DrawList->AddRectFilled(center - half_size, center + half_size, col);
+    }
 
     float cross_extent = g.FontSize * 0.4f * 0.7071f;
     float thickness = g.Style.LineThickness;//g.FontSize * 0x1p-5;
@@ -853,7 +856,8 @@ bool ImGui::CollapseButton(ImGuiID id, const ImVec2& pos, ImGuiDockNode* dock_no
     ImU32 bg_col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
     ImU32 text_col = GetColorU32(ImGuiCol_Text);
     if (hovered || held)
-        window->DrawList->AddCircleFilled(bb.GetCenter() + ImVec2(0,-0.5f), g.FontSize * 0.5f + 1.0f, bg_col);
+        //window->DrawList->AddCircleFilled(bb.GetCenter() + ImVec2(0,-0.5f), g.FontSize * 0.5f + 1.0f, bg_col);
+        window->DrawList->AddRectFilled(bb.Min, bb.Max, bg_col);
 
     if (dock_node)
         RenderArrowDockMenu(window->DrawList, bb.Min + padding, g.FontSize, text_col);
