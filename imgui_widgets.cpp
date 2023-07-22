@@ -6130,7 +6130,11 @@ bool ImGui::TreeNodeBehavior(ImGuiID id, ImGuiTreeNodeFlags flags, const char* l
     ImGuiContext& g = *GImGui;
     const ImGuiStyle& style = g.Style;
     const bool display_frame = (flags & ImGuiTreeNodeFlags_Framed) != 0;
-    const ImVec2 padding = (display_frame || (flags & ImGuiTreeNodeFlags_FramePadding)) ? style.FramePadding : ImVec2(style.FramePadding.x, ImMin(window->DC.CurrLineTextBaseOffset, style.FramePadding.y));
+    ImVec2 padding = (display_frame || (flags & ImGuiTreeNodeFlags_FramePadding)) ? style.FramePadding : ImVec2(style.FramePadding.x, ImMin(window->DC.CurrLineTextBaseOffset, style.FramePadding.y) + style.ItemSpacing.y * 0.5f);
+
+    if (window->DC.NoYSpacing) {
+        window->DC.CursorPos.y -= g.Style.ItemSpacing.y;
+    }
 
     if (!label_end)
         label_end = FindRenderedTextEnd(label);
@@ -6143,19 +6147,27 @@ bool ImGui::TreeNodeBehavior(ImGuiID id, ImGuiTreeNodeFlags flags, const char* l
     frame_bb.Min.y = window->DC.CursorPos.y;
     frame_bb.Max.x = window->WorkRect.Max.x;
     frame_bb.Max.y = window->DC.CursorPos.y + frame_height;
-    if (display_frame)
+    if ((flags & ImGuiTreeNodeFlags_SpanFullWidth) || display_frame)
     {
-        // Framed header expand a little outside the default padding, to the edge of InnerClipRect
-        // (FIXME: May remove this at some point and make InnerClipRect align with WindowPadding.x instead of WindowPadding.x*0.5f)
-        frame_bb.Min.x -= IM_FLOOR(window->WindowPadding.x * 0.5f - 1.0f);
-        frame_bb.Max.x += IM_FLOOR(window->WindowPadding.x * 0.5f);
+        frame_bb.Min.x -= IM_FLOOR(window->WindowPadding.x);
+        frame_bb.Max.x += IM_FLOOR(window->WindowPadding.x);
     }
+    //else if (display_frame)
+    //{
+    //    // Framed header expand a little outside the default padding, to the edge of InnerClipRect
+    //    // (FIXME: May remove this at some point and make InnerClipRect align with WindowPadding.x instead of WindowPadding.x*0.5f)
+    //    frame_bb.Min.x -= IM_FLOOR(window->WindowPadding.x * 0.5f - 1.0f);
+    //    frame_bb.Max.x += IM_FLOOR(window->WindowPadding.x * 0.5f);
+    //}
 
-    const float text_offset_x = g.FontSize + (display_frame ? padding.x * 3 : padding.x * 2);           // Collapser arrow width + Spacing
+    const float text_offset_x = g.FontSize + padding.x * 2;//(display_frame ? padding.x * 3 : padding.x * 2);           // Collapser arrow width + Spacing
     const float text_offset_y = ImMax(padding.y, window->DC.CurrLineTextBaseOffset);                    // Latch before ItemSize changes it
     const float text_width = g.FontSize + (label_size.x > 0.0f ? label_size.x + padding.x * 2 : 0.0f);  // Include collapser
     ImVec2 text_pos(window->DC.CursorPos.x + text_offset_x, window->DC.CursorPos.y + text_offset_y);
-    ItemSize(ImVec2(text_width, frame_height), padding.y);
+    //float temp = g.Style.ItemSpacing.y;
+    //g.Style.ItemSpacing.y = 0;
+    ItemSize(ImVec2(text_width, frame_height), padding.y, true);
+    //g.Style.ItemSpacing.y = temp;
 
     // For regular tree nodes, we arbitrary allow to click past 2 worth of ItemSpacing
     ImRect interact_bb = frame_bb;
@@ -6296,7 +6308,7 @@ bool ImGui::TreeNodeBehavior(ImGuiID id, ImGuiTreeNodeFlags flags, const char* l
         if (flags & ImGuiTreeNodeFlags_Bullet)
             RenderBullet(window->DrawList, ImVec2(text_pos.x - text_offset_x * 0.5f, text_pos.y + g.FontSize * 0.5f), text_col);
         else if (!is_leaf)
-            RenderArrow(window->DrawList, ImVec2(text_pos.x - text_offset_x + padding.x, text_pos.y + g.FontSize * 0.15f), text_col, is_open ? ((flags & ImGuiTreeNodeFlags_UpsideDownArrow) ? ImGuiDir_Up : ImGuiDir_Down) : ImGuiDir_Right, 0.70f);
+            RenderArrow(window->DrawList, ImVec2(text_pos.x - text_offset_x + padding.x, text_pos.y), text_col, is_open ? ((flags & ImGuiTreeNodeFlags_UpsideDownArrow) ? ImGuiDir_Up : ImGuiDir_Down) : ImGuiDir_Right, 0x0.Dp0f);
         if (g.LogEnabled)
             LogSetNextTextDecoration(">", NULL);
         RenderText(text_pos, label, label_end, false);

@@ -7243,6 +7243,7 @@ bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags)
         window->DC.CurrLineSize = window->DC.PrevLineSize = ImVec2(0.0f, 0.0f);
         window->DC.CurrLineTextBaseOffset = window->DC.PrevLineTextBaseOffset = 0.0f;
         window->DC.IsSameLine = window->DC.IsSetPos = false;
+        window->DC.NoYSpacing = false;
 
         window->DC.NavLayerCurrent = ImGuiNavLayer_Main;
         window->DC.NavLayersActiveMask = window->DC.NavLayersActiveMaskNext;
@@ -10081,7 +10082,7 @@ void ImGuiStackSizes::CompareWithContextState(ImGuiContext* ctx)
 // Advance cursor given item size for layout.
 // Register minimum needed size so it can extend the bounding box used for auto-fit calculation.
 // See comments in ItemAdd() about how/why the size provided to ItemSize() vs ItemAdd() may often different.
-void ImGui::ItemSize(const ImVec2& size, float text_baseline_y)
+void ImGui::ItemSize(const ImVec2& size, float text_baseline_y, bool no_y_spacing)
 {
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
@@ -10111,6 +10112,7 @@ void ImGui::ItemSize(const ImVec2& size, float text_baseline_y)
     window->DC.PrevLineTextBaseOffset = ImMax(window->DC.CurrLineTextBaseOffset, text_baseline_y);
     window->DC.CurrLineTextBaseOffset = 0.0f;
     window->DC.IsSameLine = window->DC.IsSetPos = false;
+    window->DC.NoYSpacing = no_y_spacing;
 
     // Horizontal layout mode
     if (window->DC.LayoutType == ImGuiLayoutType_Horizontal)
