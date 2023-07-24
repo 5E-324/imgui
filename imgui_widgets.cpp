@@ -499,6 +499,58 @@ void ImGui::BulletTextV(const char* fmt, va_list args)
 //   Frame N + RepeatDelay + RepeatRate*N   true                     true              -                   true
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 
+namespace ImGui
+{
+    static void WidgetLayout(ImRect *label_bb, float *start_pos, float item_width, const char *label, const char *label_end = NULL);
+    static void WidgetLayout(ImRect *total_bb, ImRect *bb, ImRect *label_bb, float item_width, const char *label, const char *label_end = NULL);
+}
+static void ImGui::WidgetLayout(ImRect *label_bb, float *start_pos, float item_width, const char *label, const char *label_end) {
+    const ImGuiContext &g = *GImGui;
+    const ImGuiStyle &style = g.Style;
+    const ImGuiWindow *window = GetCurrentWindowRead();
+
+    const float frame_height = g.FontSize + style.FramePadding.y * 2.0f;
+
+    if (style.LabelPosition == ImGuiDir_Right || label == label_end) {
+        const ImVec2 label_size = CalcTextSize(label, label_end);
+        const ImVec2 total_size = ImVec2(item_width + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), frame_height);
+
+        label_bb->Min = window->DC.CursorPos + ImVec2(item_width + style.ItemInnerSpacing.x, 0.0 + style.FramePadding.y);
+        label_bb->Max = window->DC.CursorPos + total_size;
+    } else {
+        label_bb->Min = window->DC.CursorPos + ImVec2(0.0, style.FramePadding.y);
+        label_bb->Max = ImVec2(window->WorkRect.Max.x - item_width - style.ItemInnerSpacing.x, window->DC.CursorPos.y + frame_height);
+        *start_pos = window->WorkRect.Max.x - item_width;
+    }
+}
+static void ImGui::WidgetLayout(ImRect *total_bb, ImRect *bb, ImRect *label_bb, float item_width, const char *label, const char *label_end) {
+    const ImGuiContext &g = *GImGui;
+    const ImGuiStyle &style = g.Style;
+    const ImGuiWindow *window = GetCurrentWindowRead();
+
+    if (style.LabelPosition == ImGuiDir_Right || label == label_end) {
+        const ImVec2 label_size = CalcTextSize(label, label_end);
+        bb->Min = window->DC.CursorPos;
+        bb->Max = window->DC.CursorPos + ImVec2(item_width, label_size.y + style.FramePadding.y * 2.0f);
+
+        total_bb->Min = bb->Min;
+        total_bb->Max = bb->Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f);
+
+        label_bb->Min = ImVec2(bb->Max.x + style.ItemInnerSpacing.x, bb->Min.y + style.FramePadding.y);
+        label_bb->Max = total_bb->Max;
+    } else {
+        total_bb->Min = window->DC.CursorPos;
+        total_bb->Max.x = window->WorkRect.Max.x;
+        total_bb->Max.y = window->DC.CursorPos.y + g.FontSize + style.FramePadding.y * 2.0f;
+
+        bb->Min = ImVec2(window->WorkRect.Max.x - item_width, total_bb->Min.y);
+        bb->Max = total_bb->Max;
+
+        label_bb->Min = total_bb->Min + ImVec2(0.0, style.FramePadding.y);
+        label_bb->Max = ImVec2(bb->Min.x - style.ItemInnerSpacing.x, total_bb->Max.y);
+    }
+}
+
 bool ImGui::ButtonBehavior(const ImRect& bb, ImGuiID id, bool* out_hovered, bool* out_held, ImGuiButtonFlags flags)
 {
     ImGuiContext& g = *GImGui;
