@@ -2615,10 +2615,17 @@ bool ImGui::DragScalarN(const char* label, ImGuiDataType data_type, void* p_data
         return false;
 
     ImGuiContext& g = *GImGui;
+    ImGuiStyle &style = g.Style;
     bool value_changed = false;
+    const char *label_end = FindRenderedTextEnd(label);
+    float item_width = CalcItemWidth();
+    ImRect label_bb;
+    if (style.LabelPosition == ImGuiDir_Left && label != label_end)
+        WidgetLayout(&label_bb, &window->DC.CursorPos.x, item_width, label, label_end);
+
     BeginGroup();
     PushID(label);
-    PushMultiItemsWidths(components, CalcItemWidth());
+    PushMultiItemsWidths(components, item_width);
     size_t type_size = GDataTypeInfo[data_type].Size;
     for (int i = 0; i < components; i++)
     {
@@ -2632,11 +2639,14 @@ bool ImGui::DragScalarN(const char* label, ImGuiDataType data_type, void* p_data
     }
     PopID();
 
-    const char* label_end = FindRenderedTextEnd(label);
     if (label != label_end)
     {
+        if (style.LabelPosition == ImGuiDir_Right) {
         SameLine(0, g.Style.ItemInnerSpacing.x);
         TextEx(label, label_end);
+        } else {
+            RenderTextClipped(label_bb.Min, label_bb.Max, label, label_end, NULL);
+    }
     }
 
     EndGroup();
@@ -2671,9 +2681,16 @@ bool ImGui::DragFloatRange2(const char* label, float* v_current_min, float* v_cu
         return false;
 
     ImGuiContext& g = *GImGui;
+    ImGuiStyle &style = g.Style;
+    const char *label_end = FindRenderedTextEnd(label);
+    float item_width = CalcItemWidth();
+    ImRect label_bb;
+    if (style.LabelPosition == ImGuiDir_Left && label != label_end)
+        WidgetLayout(&label_bb, &window->DC.CursorPos.x, item_width, label, label_end);
+
     PushID(label);
     BeginGroup();
-    PushMultiItemsWidths(2, CalcItemWidth());
+    PushMultiItemsWidths(2, item_width);
 
     float min_min = (v_min >= v_max) ? -FLT_MAX : v_min;
     float min_max = (v_min >= v_max) ? *v_current_max : ImMin(v_max, *v_current_max);
@@ -2687,9 +2704,15 @@ bool ImGui::DragFloatRange2(const char* label, float* v_current_min, float* v_cu
     ImGuiSliderFlags max_flags = flags | ((max_min == max_max) ? ImGuiSliderFlags_ReadOnly : 0);
     value_changed |= DragScalar("##max", ImGuiDataType_Float, v_current_max, v_speed, &max_min, &max_max, format_max ? format_max : format, max_flags);
     PopItemWidth();
-    SameLine(0, g.Style.ItemInnerSpacing.x);
 
-    TextEx(label, FindRenderedTextEnd(label));
+    if (label != label_end) {
+        if (style.LabelPosition == ImGuiDir_Right) {
+            SameLine(0, g.Style.ItemInnerSpacing.x);
+            TextEx(label, label_end);
+        } else {
+            RenderTextClipped(label_bb.Min, label_bb.Max, label, label_end, NULL);
+        }
+    }
     EndGroup();
     PopID();
 
@@ -2725,9 +2748,16 @@ bool ImGui::DragIntRange2(const char* label, int* v_current_min, int* v_current_
         return false;
 
     ImGuiContext& g = *GImGui;
+    ImGuiStyle &style = g.Style;
+    const char *label_end = FindRenderedTextEnd(label);
+    float item_width = CalcItemWidth();
+    ImRect label_bb;
+    if (style.LabelPosition == ImGuiDir_Left && label != label_end)
+        WidgetLayout(&label_bb, &window->DC.CursorPos.x, item_width, label, label_end);
+
     PushID(label);
     BeginGroup();
-    PushMultiItemsWidths(2, CalcItemWidth());
+    PushMultiItemsWidths(2, item_width);
 
     int min_min = (v_min >= v_max) ? INT_MIN : v_min;
     int min_max = (v_min >= v_max) ? *v_current_max : ImMin(v_max, *v_current_max);
@@ -2741,9 +2771,15 @@ bool ImGui::DragIntRange2(const char* label, int* v_current_min, int* v_current_
     ImGuiSliderFlags max_flags = flags | ((max_min == max_max) ? ImGuiSliderFlags_ReadOnly : 0);
     value_changed |= DragInt("##max", v_current_max, v_speed, max_min, max_max, format_max ? format_max : format, max_flags);
     PopItemWidth();
-    SameLine(0, g.Style.ItemInnerSpacing.x);
 
-    TextEx(label, FindRenderedTextEnd(label));
+    if (label != label_end) {
+        if (style.LabelPosition == ImGuiDir_Right) {
+            SameLine(0, g.Style.ItemInnerSpacing.x);
+            TextEx(label, label_end);
+        } else {
+            RenderTextClipped(label_bb.Min, label_bb.Max, label, label_end, NULL);
+        }
+    }
     EndGroup();
     PopID();
 
@@ -3205,10 +3241,17 @@ bool ImGui::SliderScalarN(const char* label, ImGuiDataType data_type, void* v, i
         return false;
 
     ImGuiContext& g = *GImGui;
+    ImGuiStyle& style = g.Style;
     bool value_changed = false;
+    const char *label_end = FindRenderedTextEnd(label);
+    float item_width = CalcItemWidth();
+    ImRect label_bb;
+    if (style.LabelPosition == ImGuiDir_Left && label != label_end)
+        WidgetLayout(&label_bb, &window->DC.CursorPos.x, item_width, label, label_end);
+
     BeginGroup();
     PushID(label);
-    PushMultiItemsWidths(components, CalcItemWidth());
+    PushMultiItemsWidths(components, item_width);
     size_t type_size = GDataTypeInfo[data_type].Size;
     for (int i = 0; i < components; i++)
     {
@@ -3222,11 +3265,14 @@ bool ImGui::SliderScalarN(const char* label, ImGuiDataType data_type, void* v, i
     }
     PopID();
 
-    const char* label_end = FindRenderedTextEnd(label);
     if (label != label_end)
     {
+        if (style.LabelPosition == ImGuiDir_Right) {
         SameLine(0, g.Style.ItemInnerSpacing.x);
         TextEx(label, label_end);
+        } else {
+            RenderTextClipped(label_bb.Min, label_bb.Max, label, label_end, NULL);
+    }
     }
 
     EndGroup();
@@ -5247,6 +5293,11 @@ bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flag
     const float w_button = (flags & ImGuiColorEditFlags_NoSmallPreview) ? 0.0f : (square_sz + style.ItemInnerSpacing.x);
     const float w_inputs = w_full - w_button;
     const char* label_display_end = FindRenderedTextEnd(label);
+
+    ImRect label_bb;
+    if (style.LabelPosition == ImGuiDir_Left && label != label_display_end)
+        WidgetLayout(&label_bb, &window->DC.CursorPos.x, w_full, label, label_display_end);
+
     g.NextItemData.ClearFlags();
 
     BeginGroup();
@@ -5411,11 +5462,15 @@ bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flag
 
     if (label != label_display_end && !(flags & ImGuiColorEditFlags_NoLabel))
     {
+        if (style.LabelPosition == ImGuiDir_Right) {
         // Position not necessarily next to last submitted button (e.g. if style.ColorButtonPosition == ImGuiDir_Left),
         // but we need to use SameLine() to setup baseline correctly. Might want to refactor SameLine() to simplify this.
         SameLine(0.0f, style.ItemInnerSpacing.x);
         window->DC.CursorPos.x = pos.x + ((flags & ImGuiColorEditFlags_NoInputs) ? w_button : w_full + style.ItemInnerSpacing.x);
         TextEx(label, label_display_end);
+        } else {
+            RenderTextClipped(label_bb.Min, label_bb.Max, label, label_display_end, NULL);
+        }
     }
 
     // Convert back
