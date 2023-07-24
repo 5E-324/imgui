@@ -6852,14 +6852,36 @@ bool ImGui::BeginListBox(const char* label, const ImVec2& size_arg)
     // Fractional number of items helps seeing that we can scroll down/up without looking at scrollbar.
     ImVec2 size = ImFloor(CalcItemSize(size_arg, CalcItemWidth(), GetTextLineHeightWithSpacing() * 7.25f + style.FramePadding.y * 2.0f));
     ImVec2 frame_size = ImVec2(size.x, ImMax(size.y, label_size.y));
-    ImRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + frame_size);
-    ImRect bb(frame_bb.Min, frame_bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
+
+    ImRect total_bb, frame_bb, label_bb;
+    if (style.LabelPosition == ImGuiDir_Right || label_size.x <= 0.0f) {
+        const ImVec2 total_size = ImVec2(frame_size.x + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), frame_size.y);
+
+        frame_bb.Min = window->DC.CursorPos;
+        frame_bb.Max = window->DC.CursorPos + frame_size;
+
+        total_bb.Min = frame_bb.Min;
+        total_bb.Max = frame_bb.Min + total_size;
+
+        label_bb.Min = ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y);
+        label_bb.Max = total_bb.Max;
+    } else {
+        total_bb.Min = window->DC.CursorPos;
+        total_bb.Max = ImVec2(window->WorkRect.Max.x, window->DC.CursorPos.y + frame_size.y);
+
+        frame_bb.Min = ImVec2(total_bb.Max.x - frame_size.x, total_bb.Min.y);
+        frame_bb.Max = total_bb.Max;
+
+        label_bb.Min = total_bb.Min + ImVec2(0.0, style.FramePadding.y);
+        label_bb.Max = ImVec2(frame_bb.Min.x - style.ItemInnerSpacing.x, total_bb.Max.y);
+    }
+
     g.NextItemData.ClearFlags();
 
-    if (!IsRectVisible(bb.Min, bb.Max))
+    if (!IsRectVisible(total_bb.Min, total_bb.Max))
     {
-        ItemSize(bb.GetSize(), style.FramePadding.y);
-        ItemAdd(bb, 0, &frame_bb);
+        ItemSize(total_bb.GetSize(), style.FramePadding.y);
+        ItemAdd(total_bb, 0, &frame_bb);
         return false;
     }
 
@@ -6867,11 +6889,11 @@ bool ImGui::BeginListBox(const char* label, const ImVec2& size_arg)
     BeginGroup();
     if (label_size.x > 0.0f)
     {
-        ImVec2 label_pos = ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y);
-        RenderText(label_pos, label);
-        window->DC.CursorMaxPos = ImMax(window->DC.CursorMaxPos, label_pos + label_size);
-    }
+        RenderTextClipped(label_bb.Min, label_bb.Max, label, NULL, NULL);
 
+        window->DC.CursorMaxPos = ImMax(window->DC.CursorMaxPos, total_bb.Max);
+    }
+    window->DC.CursorPos.x = frame_bb.Min.x;
     BeginChildFrame(id, frame_bb.GetSize());
     return true;
 }
