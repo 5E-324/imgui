@@ -3650,10 +3650,18 @@ bool ImGui::InputScalar(const char* label, ImGuiDataType data_type, void* p_data
     else
     {
         const float button_size = GetFrameHeight();
+        float item_width = CalcItemWidth();
+        const char *label_end = FindRenderedTextEnd(label);
+
+        const ImVec2 frame_size = ImVec2(item_width, g.FontSize + style.FramePadding.y * 2.0f);
+
+        ImRect label_bb;
+        if (style.LabelPosition == ImGuiDir_Left && label != label_end)
+            WidgetLayout(&label_bb, &window->DC.CursorPos.x, item_width, label, label_end);
 
         BeginGroup(); // The only purpose of the group here is to allow the caller to query item data e.g. IsItemActive()
         PushID(label);
-        SetNextItemWidth(ImMax(1.0f, CalcItemWidth() - (button_size + style.ItemInnerSpacing.x) * 2));
+        SetNextItemWidth(ImMax(1.0f, item_width - (button_size + style.ItemInnerSpacing.x) * 2));
         if (InputText("", buf, IM_ARRAYSIZE(buf), flags)) // PushId(label) + "" gives us the expected ID from outside point of view
             value_changed = DataTypeApplyFromText(buf, data_type, p_data, format);
         IMGUI_TEST_ENGINE_ITEM_INFO(g.LastItemData.ID, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Inputable);
@@ -3679,11 +3687,14 @@ bool ImGui::InputScalar(const char* label, ImGuiDataType data_type, void* p_data
         if (flags & ImGuiInputTextFlags_ReadOnly)
             EndDisabled();
 
-        const char* label_end = FindRenderedTextEnd(label);
         if (label != label_end)
         {
+            if (style.LabelPosition == ImGuiDir_Right) {
             SameLine(0, style.ItemInnerSpacing.x);
             TextEx(label, label_end);
+            } else {
+                RenderTextClipped(label_bb.Min, label_bb.Max, label, label_end, NULL);
+        }
         }
         style.FramePadding = backup_frame_padding;
 
@@ -3703,10 +3714,17 @@ bool ImGui::InputScalarN(const char* label, ImGuiDataType data_type, void* p_dat
         return false;
 
     ImGuiContext& g = *GImGui;
+    ImGuiStyle& style = g.Style;
     bool value_changed = false;
+    const char *label_end = FindRenderedTextEnd(label);
+    float item_width = CalcItemWidth();
+    ImRect label_bb;
+    if (style.LabelPosition == ImGuiDir_Left && label != label_end)
+        WidgetLayout(&label_bb, &window->DC.CursorPos.x, item_width, label, label_end);
+
     BeginGroup();
     PushID(label);
-    PushMultiItemsWidths(components, CalcItemWidth());
+    PushMultiItemsWidths(components, item_width);
     size_t type_size = GDataTypeInfo[data_type].Size;
     for (int i = 0; i < components; i++)
     {
@@ -3720,11 +3738,14 @@ bool ImGui::InputScalarN(const char* label, ImGuiDataType data_type, void* p_dat
     }
     PopID();
 
-    const char* label_end = FindRenderedTextEnd(label);
     if (label != label_end)
     {
+        if (style.LabelPosition == ImGuiDir_Right) {
         SameLine(0.0f, g.Style.ItemInnerSpacing.x);
         TextEx(label, label_end);
+        } else {
+            RenderTextClipped(label_bb.Min, label_bb.Max, label, label_end, NULL);
+        }
     }
 
     EndGroup();
