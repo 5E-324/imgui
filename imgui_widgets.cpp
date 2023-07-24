@@ -5338,7 +5338,7 @@ bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flag
 
     ImRect label_bb;
     if (style.LabelPosition == ImGuiDir_Left && label != label_display_end)
-        WidgetLayout(&label_bb, &window->DC.CursorPos.x, w_full, label, label_display_end);
+        WidgetLayout(&label_bb, &window->DC.CursorPos.x, (flags & ImGuiColorEditFlags_NoInputs) ? square_sz : w_full, label, (flags & ImGuiColorEditFlags_NoLabel) ? label : label_display_end);
 
     g.NextItemData.ClearFlags();
 
