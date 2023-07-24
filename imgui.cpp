@@ -1277,7 +1277,7 @@ void ImGuiStyle::ScaleAllSizes(float scale_factor)
     FramePadding = ImRound(FramePadding * scale_factor);
     TitleBarPadding = ImRound(TitleBarPadding * scale_factor);
     FramedTreeNodePadding = ImRound(FramedTreeNodePadding * scale_factor);
-    FrameRounding = ImRound(FrameRounding * scale_factor);
+    FrameRounding = (FrameRounding * scale_factor);
     ItemSpacing = ImRound(ItemSpacing * scale_factor);
     ItemInnerSpacing = ImRound(ItemInnerSpacing * scale_factor);
     CellPadding = ImRound(CellPadding * scale_factor);
@@ -1287,7 +1287,7 @@ void ImGuiStyle::ScaleAllSizes(float scale_factor)
     ScrollbarSize = ImRound(ScrollbarSize * scale_factor);
     ScrollbarRounding = ImRound(ScrollbarRounding * scale_factor);
     GrabMinSize = ImRound(GrabMinSize * scale_factor);
-    GrabRounding = ImRound(GrabRounding * scale_factor);
+    GrabRounding = (GrabRounding * scale_factor);
     LogSliderDeadzone = ImRound(LogSliderDeadzone * scale_factor);
     TabRounding = ImRound(TabRounding * scale_factor);
     TabMinWidthForCloseButton = (TabMinWidthForCloseButton != FLT_MAX) ? ImRound(TabMinWidthForCloseButton * scale_factor) : FLT_MAX;
