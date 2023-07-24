@@ -376,14 +376,14 @@ void ImGui::LabelTextV(const char* label, const char* fmt, va_list args)
 
     // Render
     if (style.LabelPosition == ImGuiDir_Right) {
-    RenderTextClipped(value_bb.Min + style.FramePadding, value_bb.Max, value_text_begin, value_text_end, &value_size, ImVec2(0.0f, 0.0f));
-    if (label_size.x > 0.0f)
-        RenderText(ImVec2(value_bb.Max.x + style.ItemInnerSpacing.x, value_bb.Min.y + style.FramePadding.y), label);
+        RenderTextClipped(value_bb.Min + style.FramePadding, value_bb.Max, value_text_begin, value_text_end, &value_size, ImVec2(0.0f, 0.0f));
+        if (label_size.x > 0.0f)
+            RenderText(ImVec2(value_bb.Max.x + style.ItemInnerSpacing.x, value_bb.Min.y + style.FramePadding.y), label);
     } else {
         RenderTextClipped(value_bb.Min + style.FramePadding, value_bb.Max, label, NULL, NULL);
         if (label_size.x > 0.0f)
             RenderText(ImVec2(value_bb.Max.x + style.ItemInnerSpacing.x, value_bb.Min.y + style.FramePadding.y), value_text_begin, value_text_end);
-}
+    }
 }
 
 void ImGui::BulletText(const char* fmt, ...)
@@ -2642,11 +2642,11 @@ bool ImGui::DragScalarN(const char* label, ImGuiDataType data_type, void* p_data
     if (label != label_end)
     {
         if (style.LabelPosition == ImGuiDir_Right) {
-        SameLine(0, g.Style.ItemInnerSpacing.x);
-        TextEx(label, label_end);
+            SameLine(0, g.Style.ItemInnerSpacing.x);
+            TextEx(label, label_end);
         } else {
             RenderTextClipped(label_bb.Min, label_bb.Max, label, label_end, NULL);
-    }
+        }
     }
 
     EndGroup();
@@ -3268,11 +3268,11 @@ bool ImGui::SliderScalarN(const char* label, ImGuiDataType data_type, void* v, i
     if (label != label_end)
     {
         if (style.LabelPosition == ImGuiDir_Right) {
-        SameLine(0, g.Style.ItemInnerSpacing.x);
-        TextEx(label, label_end);
+            SameLine(0, g.Style.ItemInnerSpacing.x);
+            TextEx(label, label_end);
         } else {
             RenderTextClipped(label_bb.Min, label_bb.Max, label, label_end, NULL);
-    }
+        }
     }
 
     EndGroup();
@@ -3690,11 +3690,11 @@ bool ImGui::InputScalar(const char* label, ImGuiDataType data_type, void* p_data
         if (label != label_end)
         {
             if (style.LabelPosition == ImGuiDir_Right) {
-            SameLine(0, style.ItemInnerSpacing.x);
-            TextEx(label, label_end);
+                SameLine(0, style.ItemInnerSpacing.x);
+                TextEx(label, label_end);
             } else {
                 RenderTextClipped(label_bb.Min, label_bb.Max, label, label_end, NULL);
-        }
+            }
         }
         style.FramePadding = backup_frame_padding;
 
@@ -3741,8 +3741,8 @@ bool ImGui::InputScalarN(const char* label, ImGuiDataType data_type, void* p_dat
     if (label != label_end)
     {
         if (style.LabelPosition == ImGuiDir_Right) {
-        SameLine(0.0f, g.Style.ItemInnerSpacing.x);
-        TextEx(label, label_end);
+            SameLine(0.0f, g.Style.ItemInnerSpacing.x);
+            TextEx(label, label_end);
         } else {
             RenderTextClipped(label_bb.Min, label_bb.Max, label, label_end, NULL);
         }
@@ -4303,7 +4303,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
     
     ImRect total_bb, frame_bb, label_bb;
     if (style.LabelPosition == ImGuiDir_Right || label_size.x <= 0.0f) {
-    const ImVec2 total_size = ImVec2(frame_size.x + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), frame_size.y);
+        const ImVec2 total_size = ImVec2(frame_size.x + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), frame_size.y);
 
         frame_bb.Min = window->DC.CursorPos;
         frame_bb.Max = window->DC.CursorPos + frame_size;
@@ -5503,11 +5503,11 @@ bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flag
     if (label != label_display_end && !(flags & ImGuiColorEditFlags_NoLabel))
     {
         if (style.LabelPosition == ImGuiDir_Right) {
-        // Position not necessarily next to last submitted button (e.g. if style.ColorButtonPosition == ImGuiDir_Left),
-        // but we need to use SameLine() to setup baseline correctly. Might want to refactor SameLine() to simplify this.
-        SameLine(0.0f, style.ItemInnerSpacing.x);
-        window->DC.CursorPos.x = pos.x + ((flags & ImGuiColorEditFlags_NoInputs) ? w_button : w_full + style.ItemInnerSpacing.x);
-        TextEx(label, label_display_end);
+            // Position not necessarily next to last submitted button (e.g. if style.ColorButtonPosition == ImGuiDir_Left),
+            // but we need to use SameLine() to setup baseline correctly. Might want to refactor SameLine() to simplify this.
+            SameLine(0.0f, style.ItemInnerSpacing.x);
+            window->DC.CursorPos.x = pos.x + ((flags & ImGuiColorEditFlags_NoInputs) ? w_button : w_full + style.ItemInnerSpacing.x);
+            TextEx(label, label_display_end);
         } else {
             RenderTextClipped(label_bb.Min, label_bb.Max, label, label_display_end, NULL);
         }
