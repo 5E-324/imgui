@@ -3824,7 +3824,7 @@ void ImFont::RenderText(ImDrawList* draw_list, float size, const ImVec2& pos, Im
 void ImGui::RenderArrow(ImDrawList* draw_list, ImVec2 pos, ImU32 col, ImGuiDir dir, float scale)
 {
     const float h = draw_list->_Data->FontSize * 1.00f;
-    float r = h * 0x0.5p0f * scale;
+    float r = h * 0.3f * scale;
     ImVec2 center = pos + ImVec2(h * 0.50f, h * 0.50f);
 
     ImVec2 a, b, c;
