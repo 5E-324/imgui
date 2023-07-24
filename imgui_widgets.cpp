@@ -1816,34 +1816,11 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
     IM_ASSERT((flags & (ImGuiComboFlags_NoArrowButton | ImGuiComboFlags_NoPreview)) != (ImGuiComboFlags_NoArrowButton | ImGuiComboFlags_NoPreview)); // Can't use both flags together
 
     const float arrow_size = (flags & ImGuiComboFlags_NoArrowButton) ? 0.0f : GetFrameHeight();
-    const ImVec2 label_size = CalcTextSize(label, NULL, true);
+    const char *label_end = FindRenderedTextEnd(label);
     const float w = (flags & ImGuiComboFlags_NoPreview) ? arrow_size : CalcItemWidth();
-    //const ImRect bb(window->DC.CursorPos, window->DC.CursorPos + ImVec2(w, label_size.y + style.FramePadding.y * 2.0f));
-    //const ImRect total_bb(bb.Min, bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
-    //const float w2 = window->WorkRect.Max.x - w;
-    //const ImRect bb(window->DC.CursorPos + ImVec2(w2, 0.0f), ImVec2(window->WorkRect.Max.x, window->DC.CursorPos.y + label_size.y + style.FramePadding.y * 2.0f));
-    //const ImRect total_bb(window->DC.CursorPos, bb.Max);
+
     ImRect total_bb, bb, label_bb;
-    if (style.LabelPosition == ImGuiDir_Right) {
-        bb.Min = window->DC.CursorPos;
-        bb.Max = window->DC.CursorPos + ImVec2(w, label_size.y + style.FramePadding.y * 2.0f);
-
-        total_bb.Min = bb.Min;
-        total_bb.Max = bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f);
-
-        label_bb.Min = ImVec2(bb.Max.x + style.ItemInnerSpacing.x, bb.Min.y + style.FramePadding.y);
-        label_bb.Max = total_bb.Max;
-    } else {
-        total_bb.Min = window->DC.CursorPos;
-        total_bb.Max.x = window->WorkRect.Max.x;
-        total_bb.Max.y = window->DC.CursorPos.y + label_size.y + style.FramePadding.y * 2.0f;
-
-        bb.Min = ImVec2(window->WorkRect.Max.x - w, total_bb.Min.y);
-        bb.Max = total_bb.Max;
-
-        label_bb.Min = total_bb.Min + ImVec2(0.0, style.FramePadding.y);
-        label_bb.Max = ImVec2(bb.Min.x - style.ItemInnerSpacing.x, total_bb.Max.y);
-    }
+    WidgetLayout(&total_bb, &bb, &label_bb, w, label, label_end);
     ItemSize(total_bb, style.FramePadding.y);
     if (!ItemAdd(total_bb, id, &bb))
         return false;
@@ -1890,9 +1867,7 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
             LogSetNextTextDecoration("{", "}");
         RenderTextClipped(bb.Min + style.FramePadding, ImVec2(value_x2, bb.Max.y), preview_value, NULL, NULL);
     }
-    if (label_size.x > 0)
-        //RenderText(ImVec2(bb.Max.x + style.ItemInnerSpacing.x, bb.Min.y + style.FramePadding.y), label);
-        //RenderTextClipped(total_bb.Min + ImVec2(0.0, style.FramePadding.y), ImVec2(bb.Min.x - style.ItemInnerSpacing.x, total_bb.Max.y), label, NULL, NULL);
+    if (label != label_end)
         RenderTextClipped(label_bb.Min, label_bb.Max, label, NULL, NULL);
 
     if (!popup_open)
