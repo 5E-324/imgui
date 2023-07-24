@@ -350,16 +350,40 @@ void ImGui::LabelTextV(const char* label, const char* fmt, va_list args)
     const ImVec2 label_size = CalcTextSize(label, NULL, true);
 
     const ImVec2 pos = window->DC.CursorPos;
-    const ImRect value_bb(pos, pos + ImVec2(w, value_size.y + style.FramePadding.y * 2));
-    const ImRect total_bb(pos, pos + ImVec2(w + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), ImMax(value_size.y, label_size.y) + style.FramePadding.y * 2));
+    //const ImRect value_bb(pos, pos + ImVec2(w, value_size.y + style.FramePadding.y * 2));
+    //const ImRect total_bb(pos, pos + ImVec2(w + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), ImMax(value_size.y, label_size.y) + style.FramePadding.y * 2));
+    ImRect value_bb, total_bb;
+
+    if (style.LabelPosition == ImGuiDir_Right) {
+        value_bb.Min = pos;
+        value_bb.Max = pos + ImVec2(w, value_size.y + style.FramePadding.y * 2);
+
+        total_bb.Min = pos;
+        total_bb.Max = pos + ImVec2(w + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), ImMax(value_size.y, label_size.y) + style.FramePadding.y * 2);
+    } else {
+        //const float w2 = window->WorkRect.Max.x
+        value_bb.Min = pos;
+        value_bb.Max = ImVec2(window->WorkRect.Max.x - w, pos.y + value_size.y + style.FramePadding.y * 2);
+
+        total_bb.Min = pos;
+        total_bb.Max.x = value_bb.Max.x + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f);
+        total_bb.Max.y = pos.y + ImMax(value_size.y, label_size.y) + style.FramePadding.y * 2;
+    }
+
     ItemSize(total_bb, style.FramePadding.y);
     if (!ItemAdd(total_bb, 0))
         return;
 
     // Render
+    if (style.LabelPosition == ImGuiDir_Right) {
     RenderTextClipped(value_bb.Min + style.FramePadding, value_bb.Max, value_text_begin, value_text_end, &value_size, ImVec2(0.0f, 0.0f));
     if (label_size.x > 0.0f)
         RenderText(ImVec2(value_bb.Max.x + style.ItemInnerSpacing.x, value_bb.Min.y + style.FramePadding.y), label);
+    } else {
+        RenderTextClipped(value_bb.Min + style.FramePadding, value_bb.Max, label, NULL, NULL);
+        if (label_size.x > 0.0f)
+            RenderText(ImVec2(value_bb.Max.x + style.ItemInnerSpacing.x, value_bb.Min.y + style.FramePadding.y), value_text_begin, value_text_end);
+}
 }
 
 void ImGui::BulletText(const char* fmt, ...)
